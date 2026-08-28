@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="A plain-language map of how Chat, Cowork, Claude Code, Remote Control, Dispatch, Code on the web and Slack actually relate to each other.">
+<title>One Claude, Many Doors</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&display=swap">
+
+<style>
+  :root{
+    --paper:#EDEFF4;
+    --card:#FFFFFF;
+    --card-2:#F6F7FB;
+    --ink:#151A2E;
+    --ink-soft:#4E5872;
+    --ink-faint:#858DA3;
+    --rule:#D5D9E4;
+    --rule-soft:#E3E6EE;
+
+    --chat:#0E7C6B;      --chat-wash:#DCEEEA;
+    --cowork:#B26A00;    --cowork-wash:#F6E7CD;
+    --code:#C4362A;      --code-wash:#F8DFDB;
+    --door:#5B3BB0;      --door-wash:#E6E0F7;
+
+    --shadow:0 1px 0 rgba(21,26,46,.05), 0 14px 30px -22px rgba(21,26,46,.55);
+
+    --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+    --body:"Newsreader","Iowan Old Style",Georgia,serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#111524;
+      --card:#191E30;
+      --card-2:#1E2436;
+      --ink:#E8EBF3;
+      --ink-soft:#A7AFC5;
+      --ink-faint:#7C859E;
+      --rule:#2D3449;
+      --rule-soft:#242A3D;
+
+      --chat:#52CFB6;    --chat-wash:#123330;
+      --cowork:#F0B454;  --cowork-wash:#37280E;
+      --code:#FB8074;    --code-wash:#3A1C19;
+      --door:#B197F5;    --door-wash:#241C42;
+
+      --shadow:0 1px 0 rgba(0,0,0,.3), 0 14px 34px -24px rgba(0,0,0,.9);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#111524;
+    --card:#191E30;
+    --card-2:#1E2436;
+    --ink:#E8EBF3;
+    --ink-soft:#A7AFC5;
+    --ink-faint:#7C859E;
+    --rule:#2D3449;
+    --rule-soft:#242A3D;
+
+    --chat:#52CFB6;    --chat-wash:#123330;
+    --cowork:#F0B454;  --cowork-wash:#37280E;
+    --code:#FB8074;    --code-wash:#3A1C19;
+    --door:#B197F5;    --door-wash:#241C42;
+
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 14px 34px -24px rgba(0,0,0,.9);
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:19px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 96px}
+  .prose{max-width:64ch}
+
+  h1,h2,h3,.eyebrow,.chip,th,.num{font-family:var(--display)}
+
+  h1{
+    font-size:clamp(2.6rem,7vw,4.6rem);
+    line-height:.98;
+    font-weight:800;
+    letter-spacing:-.028em;
+    margin:0;
+    text-wrap:balance;
+  }
+  h2{
+    font-size:clamp(1.6rem,3.4vw,2.35rem);
+    line-height:1.08;
+    font-weight:700;
+    letter-spacing:-.02em;
+    margin:0;
+    text-wrap:balance;
+  }
+  h3{
+    font-size:1.24rem;
+    line-height:1.2;
+    font-weight:700;
+    letter-spacing:-.012em;
+    margin:0;
+  }
+  p{margin:0}
+
+  .eyebrow{
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin:0;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:clamp(56px,9vw,104px) 0 clamp(40px,6vw,64px);
+    display:flex;
+    flex-direction:column;
+    gap:26px;
+  }
+  .hero .dek{
+    font-size:clamp(1.1rem,2.1vw,1.32rem);
+    color:var(--ink-soft);
+    max-width:56ch;
+  }
+  .hero .dek strong{color:var(--ink);font-weight:600}
+  .namecheck{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    font-family:var(--display);
+    font-size:.86rem;
+    font-weight:600;
+  }
+  .namecheck span{
+    border:1px solid var(--rule);
+    border-radius:999px;
+    padding:5px 13px;
+    color:var(--ink-soft);
+    background:var(--card);
+  }
+
+  /* ---------- sections ---------- */
+  section{padding:clamp(44px,6vw,72px) 0;border-top:1px solid var(--rule-soft)}
+  .head{display:flex;flex-direction:column;gap:12px;margin-bottom:34px}
+  .head p{color:var(--ink-soft);max-width:62ch}
+
+  /* ---------- the big idea ---------- */
+  .idea{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  .idea > div{background:var(--card);padding:26px 24px;display:flex;flex-direction:column;gap:10px}
+  .idea .num{
+    font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--door);
+  }
+  .idea p{font-size:1rem;color:var(--ink-soft)}
+  .kicker{
+    margin-top:26px;
+    font-size:1.12rem;
+    padding:20px 24px;
+    border-left:4px solid var(--door);
+    background:var(--door-wash);
+    border-radius:0 12px 12px 0;
+    max-width:66ch;
+  }
+
+  /* ---------- room cards ---------- */
+  .rooms{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(268px,1fr));
+    gap:20px;
+  }
+  .room{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-top:5px solid var(--hue);
+    border-radius:14px;
+    padding:26px 24px 24px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .room--chat{--hue:var(--chat);--wash:var(--chat-wash)}
+  .room--cowork{--hue:var(--cowork);--wash:var(--cowork-wash)}
+  .room--code{--hue:var(--code);--wash:var(--code-wash)}
+  .room h3{color:var(--hue)}
+  .room dl{margin:0;display:flex;flex-direction:column;gap:13px}
+  .room dt{
+    font-family:var(--display);
+    font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:1px;
+  }
+  .room dd{margin:0;font-size:.98rem;line-height:1.5}
+  .picture{
+    margin-top:auto;
+    background:var(--wash);
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:.95rem;
+    font-style:italic;
+    color:var(--ink);
+  }
+  .picture b{font-style:normal;font-family:var(--display);font-size:.68rem;font-weight:700;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--hue);display:block;margin-bottom:4px}
+
+  /* ---------- figures ---------- */
+  figure{margin:0}
+  .figbox{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:16px;
+    padding:22px 20px 18px;
+    box-shadow:var(--shadow);
+  }
+  .scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .scroller svg{display:block;width:100%;height:auto}
+  .fig-map svg{min-width:720px}
+  .fig-engine svg{min-width:520px}
+  figcaption{
+    margin-top:16px;
+    font-size:.94rem;
+    color:var(--ink-soft);
+    max-width:66ch;
+  }
+
+  /* svg type */
+  .dia text{font-family:var(--display);fill:var(--ink)}
+  .dia .t-title{font-size:15px;font-weight:700}
+  .dia .t-node{font-size:13.5px;font-weight:700}
+  .dia .t-sub{font-size:11.5px;font-weight:400;fill:var(--ink-soft)}
+  .dia .t-tiny{font-size:10.5px;font-weight:400;fill:var(--ink-faint)}
+  .dia .t-edge{font-size:11px;font-weight:500;fill:var(--ink-soft)}
+
+  .ahead-door{fill:var(--door)}
+  .ahead-soft{fill:var(--ink-soft)}
+  .edge-door{stroke:var(--door);stroke-width:1.6;fill:none}
+  .edge-soft{stroke:var(--ink-soft);stroke-width:1.6;fill:none}
+  .box-door{fill:var(--door-wash);stroke:var(--door);stroke-width:1.6}
+  .box-local{fill:var(--card-2);stroke:var(--ink);stroke-width:2}
+  .box-cloud{fill:none;stroke:var(--ink-soft);stroke-width:2;stroke-dasharray:7 6}
+  .box-src{fill:var(--card-2);stroke:var(--rule);stroke-width:1.6}
+  .box-cowork{fill:var(--cowork-wash);stroke:var(--cowork);stroke-width:1.6}
+  .box-code{fill:var(--code-wash);stroke:var(--code);stroke-width:1.6}
+  .dia .t-cowork{fill:var(--cowork)}
+  .dia .t-code{fill:var(--code)}
+  .dia .t-door{fill:var(--door)}
+
+  .lane,.dest{transition:opacity .22s ease}
+  .map[data-active] .lane:not(.on),
+  .map[data-active] .dest:not(.on){opacity:.15}
+
+  /* ---------- door buttons ---------- */
+  .hint{
+    font-family:var(--display);
+    font-size:.8rem;font-weight:600;
+    color:var(--ink-faint);
+    margin:22px 0 14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .hint::before{content:"";width:22px;height:1px;background:var(--rule);display:block}
+
+  .doors{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:16px;
+    padding:0;
+    margin:0;
+    list-style:none;
+  }
+  .door{
+    -webkit-appearance:none;appearance:none;
+    width:100%;height:100%;
+    text-align:left;
+    font:inherit;
+    cursor:pointer;
+    background:var(--card);
+    color:var(--ink);
+    border:1px solid var(--rule);
+    border-radius:14px;
+    padding:22px 22px 20px;
+    display:flex;flex-direction:column;gap:11px;
+    transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+  .door:hover{border-color:var(--door);box-shadow:var(--shadow);transform:translateY(-2px)}
+  .door[aria-pressed="true"]{
+    border-color:var(--door);
+    box-shadow:0 0 0 2px var(--door-wash), var(--shadow);
+  }
+  .door:focus-visible{outline:3px solid var(--door);outline-offset:3px}
+  .door h3{color:var(--door);display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .door .where{
+    font-family:var(--display);
+    font-size:.62rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--ink-faint);white-space:nowrap;
+  }
+  .door p{font-size:.98rem;line-height:1.5}
+  .door .like{font-size:.94rem;font-style:italic;color:var(--ink-soft)}
+
+  /* ---------- table ---------- */
+  .tablewrap{
+    overflow-x:auto;
+    border:1px solid var(--rule);
+    border-radius:14px;
+    background:var(--card);
+    box-shadow:var(--shadow);
+  }
+  table{border-collapse:collapse;width:100%;min-width:660px}
+  th,td{
+    text-align:left;
+    padding:16px 18px;
+    border-bottom:1px solid var(--rule-soft);
+    vertical-align:top;
+    font-size:.97rem;
+    line-height:1.45;
+  }
+  thead th{
+    font-size:.95rem;
+    font-weight:700;
+    color:var(--door);
+    background:var(--card-2);
+    border-bottom:1px solid var(--rule);
+    letter-spacing:-.01em;
+  }
+  thead th:first-child{color:var(--ink-faint);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase}
+  tbody th{
+    font-size:.68rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--ink-faint);
+    white-space:nowrap;
+    background:var(--card-2);
+  }
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+  td .yes{color:var(--code);font-weight:600;font-family:var(--display);font-size:.92rem}
+  td .no{color:var(--chat);font-weight:600;font-family:var(--display);font-size:.92rem}
+
+  /* ---------- shelf ---------- */
+  .shelf{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  .shelf > div{background:var(--card);padding:22px 22px 20px;display:flex;flex-direction:column;gap:8px}
+  .shelf h3{font-size:1.02rem;color:var(--door)}
+  .shelf p{font-size:.95rem;color:var(--ink-soft)}
+
+  /* ---------- cheat sheet ---------- */
+  .cheat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;
+    background:var(--rule);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+  .cheat li{
+    background:var(--card);
+    padding:16px 22px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:6px 14px;
+  }
+  .cheat .want{flex:1 1 300px;font-size:1rem}
+  .cheat .use{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:1rem;
+    color:var(--door);
+    white-space:nowrap;
+  }
+  .cheat .use::before{content:"→ ";color:var(--ink-faint);font-weight:400}
+
+  footer{
+    padding:40px 0 0;
+    border-top:1px solid var(--rule-soft);
+    color:var(--ink-faint);
+    font-size:.92rem;
+    max-width:64ch;
+  }
+  footer a{color:var(--ink-soft)}
+
+  @media (min-width: 660px){
+    .doors{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .shelf{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (min-width: 900px){
+    .shelf{grid-template-columns:repeat(3,minmax(0,1fr))}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important;scroll-behavior:auto !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">A map for anyone who has lost track</p>
+    <h1>One&nbsp;Claude,<br>many&nbsp;doors.</h1>
+    <p class="dek">Claude Code, Cowork, Dispatch, Remote Control — they sound like five different robots. They aren't. There is <strong>one helper</strong>. What changes is <strong>which room it's working in</strong> and <strong>which door you walked through</strong> to reach it.</p>
+    <div class="namecheck">
+      <span>Chat</span><span>Cowork</span><span>Claude Code</span><span>Remote Control</span><span>Dispatch</span><span>Claude Code on the web</span><span>Slack</span><span>Scheduled tasks</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="head">
+      <p class="eyebrow">Start here</p>
+      <h2>Three kinds of words, and people mix them up</h2>
+      <p>Every name in that list above is one of three things. Once you know which, the confusion mostly goes away.</p>
+    </div>
+
+    <div class="idea">
+      <div>
+        <p class="num">The helper</p>
+        <h3>Claude</h3>
+        <p>The actual thinking part. There is only one of these. It's the same Claude whether you're on your phone, in a terminal, or in a spreadsheet.</p>
+      </div>
+      <div>
+        <p class="num">The rooms</p>
+        <h3>Chat · Cowork · Code</h3>
+        <p>Three kinds of work Claude can be doing. Talking with you. Working on your documents. Working on your code.</p>
+      </div>
+      <div>
+        <p class="num">The doors</p>
+        <h3>Remote Control · Dispatch · the web · Slack</h3>
+        <p>Ways to reach a room when you're not sitting in front of it. A door is not a new helper. It's a hallway.</p>
+      </div>
+    </div>
+
+    <p class="kicker">Almost every “wait, aren't these the same thing?” moment is <strong>two different doors that lead to the same room</strong>. They feel identical because the thing at the end is identical. What's different is the hallway.</p>
+  </section>
+
+  <section>
+    <div class="head">
+      <p class="eyebrow">The rooms</p>
+      <h2>Where the work actually happens</h2>
+      <p>Same helper in all three. What changes is what it's allowed to touch and what it hands you back at the end.</p>
+    </div>
+
+    <div class="rooms">
+
+      <article class="room room--chat">
+        <h3>Chat</h3>
+        <dl>
+          <div><dt>Where you find it</dt><dd>claude.ai, the phone app, the Chat tab in the desktop app.</dd></div>
+          <div><dt>What it does</dt><dd>Answers questions, explains things, writes and rewrites, thinks out loud with you.</dd></div>
+          <div><dt>What it does not do</dt><dd>It isn't digging through the folders on your computer on its own.</dd></div>
+        </dl>
+        <p class="picture"><b>Picture it</b>Talking to a very well-read friend across the kitchen table.</p>
+      </article>
+
+      <article class="room room--cowork">
+        <h3>Cowork</h3>
+        <dl>
+          <div><dt>Where you find it</dt><dd>The Cowork tab in the Claude desktop app.</dd></div>
+          <div><dt>What it does</dt><dd>You point it at a real folder. It opens the files, works across them, and hands back a finished thing: a slide deck, a spreadsheet, a report, a tidied-up folder.</dd></div>
+          <div><dt>Who it's for</dt><dd>People doing office and research work who don't want a command line.</dd></div>
+        </dl>
+        <p class="picture"><b>Picture it</b>Handing someone your messy folder and getting a finished report back.</p>
+      </article>
+
+      <article class="room room--code">
+        <h3>Claude Code</h3>
+        <dl>
+          <div><dt>Where you find it</dt><dd>The terminal, your code editor, the Code tab in the desktop app, claude.ai/code.</dd></div>
+          <div><dt>What it does</dt><dd>Reads a whole codebase, edits files, runs commands and tests, saves work to git, opens pull requests.</dd></div>
+          <div><dt>Who it's for</dt><dd>People who write software.</dd></div>
+        </dl>
+        <p class="picture"><b>Picture it</b>A builder in the workshop, with every tool on the wall.</p>
+      </article>
+
+    </div>
+
+    <figure class="figbox fig-engine" style="margin-top:28px">
+      <div class="scroller">
+        <svg class="dia" viewBox="0 0 660 250" role="img" aria-label="Cowork and Claude Code are the same Claude engine, pointed at two different kinds of material: documents on one side, a codebase on the other.">
+          <defs>
+            <marker id="ar-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" class="ahead-soft"></path>
+            </marker>
+          </defs>
+
+          <rect x="200" y="14" width="260" height="58" rx="14" class="box-src"></rect>
+          <text class="t-node" x="330" y="40" text-anchor="middle">The same Claude engine</text>
+          <text class="t-sub" x="330" y="58" text-anchor="middle">plans · opens files · runs commands · checks itself</text>
+
+          <path class="edge-soft" d="M330 74 V 100 H 150 V 142" marker-end="url(#ar-soft)"></path>
+          <path class="edge-soft" d="M330 74 V 100 H 510 V 142" marker-end="url(#ar-soft)"></path>
+
+          <text class="t-edge" x="140" y="120" text-anchor="end">pointed at a folder</text>
+          <text class="t-edge" x="140" y="135" text-anchor="end">of documents</text>
+          <text class="t-edge" x="520" y="120" text-anchor="start">pointed at a folder</text>
+          <text class="t-edge" x="520" y="135" text-anchor="start">of code</text>
+
+          <rect x="24" y="150" width="252" height="80" rx="13" class="box-cowork"></rect>
+          <text class="t-node t-cowork" x="150" y="180" text-anchor="middle">Cowork</text>
+          <text class="t-sub" x="150" y="200" text-anchor="middle">decks · spreadsheets</text>
+          <text class="t-sub" x="150" y="216" text-anchor="middle">reports · tidy folders</text>
+
+          <rect x="384" y="150" width="252" height="80" rx="13" class="box-code"></rect>
+          <text class="t-node t-code" x="510" y="180" text-anchor="middle">Claude Code</text>
+          <text class="t-sub" x="510" y="200" text-anchor="middle">edited source files</text>
+          <text class="t-sub" x="510" y="216" text-anchor="middle">tests · commits · pull requests</text>
+        </svg>
+      </div>
+      <figcaption>Cowork and Claude Code are not rivals and they are not the same product. They are one engine aimed at two different piles of material — which is exactly why they feel so similar to use.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="head">
+      <p class="eyebrow">The doors</p>
+      <h2>Four ways in — but only two computers</h2>
+      <p>This is where nearly everyone gets tangled. All four of these let you hand Claude a job while you're away from your desk. The real difference is <strong>whose computer does the work</strong>.</p>
+    </div>
+
+    <figure class="figbox fig-map">
+      <div class="scroller">
+        <svg id="map" class="dia map" viewBox="0 0 880 470" role="img" aria-label="Four ways to reach Claude when you are away — Remote Control, Dispatch, Claude Code on the web, and Slack — fan out into only two destinations: your own computer for Remote Control and Dispatch, and Anthropic's cloud computer for the web and Slack.">
+          <defs>
+            <marker id="ar-door" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" class="ahead-door"></path>
+            </marker>
+          </defs>
+
+          <rect x="290" y="14" width="300" height="62" rx="15" class="box-src"></rect>
+          <text class="t-node" x="440" y="40" text-anchor="middle">You, away from your desk</text>
+          <text class="t-sub" x="440" y="59" text-anchor="middle">phone · browser · someone else's laptop</text>
+
+          <!-- lane: remote control -->
+          <g class="lane" id="lane-rc">
+            <path class="edge-door" d="M440 78 C 440 112, 105 106, 105 140" marker-end="url(#ar-door)"></path>
+            <rect x="12" y="146" width="186" height="44" rx="12" class="box-door"></rect>
+            <text class="t-node t-door" x="105" y="174" text-anchor="middle">Remote Control</text>
+            <path class="edge-door" d="M105 190 L105 234"></path>
+            <path class="edge-door" d="M105 288 L105 332" marker-end="url(#ar-door)"></path>
+            <text class="t-edge" x="105" y="256" text-anchor="middle">steers a session</text>
+            <text class="t-edge" x="105" y="272" text-anchor="middle">you already started</text>
+          </g>
+
+          <!-- lane: dispatch -->
+          <g class="lane" id="lane-dispatch">
+            <path class="edge-door" d="M440 78 C 440 112, 315 108, 315 140" marker-end="url(#ar-door)"></path>
+            <rect x="222" y="146" width="186" height="44" rx="12" class="box-door"></rect>
+            <text class="t-node t-door" x="315" y="174" text-anchor="middle">Dispatch</text>
+            <path class="edge-door" d="M315 190 L315 234"></path>
+            <path class="edge-door" d="M315 288 L315 332" marker-end="url(#ar-door)"></path>
+            <text class="t-edge" x="315" y="256" text-anchor="middle">wakes up the</text>
+            <text class="t-edge" x="315" y="272" text-anchor="middle">desktop app for you</text>
+          </g>
+
+          <!-- lane: web -->
+          <g class="lane" id="lane-web">
+            <path class="edge-door" d="M440 78 C 440 112, 565 108, 565 140" marker-end="url(#ar-door)"></path>
+            <rect x="472" y="146" width="186" height="44" rx="12" class="box-door"></rect>
+            <text class="t-node t-door" x="565" y="174" text-anchor="middle">Code on the web</text>
+            <path class="edge-door" d="M565 190 L565 234"></path>
+            <path class="edge-door" d="M565 288 L565 332" marker-end="url(#ar-door)"></path>
+            <text class="t-edge" x="565" y="256" text-anchor="middle">rents a brand-new</text>
+            <text class="t-edge" x="565" y="272" text-anchor="middle">machine, just for this</text>
+          </g>
+
+          <!-- lane: slack -->
+          <g class="lane" id="lane-slack">
+            <path class="edge-door" d="M440 78 C 440 112, 780 106, 780 140" marker-end="url(#ar-door)"></path>
+            <rect x="687" y="146" width="186" height="44" rx="12" class="box-door"></rect>
+            <text class="t-node t-door" x="780" y="174" text-anchor="middle">Slack @Claude</text>
+            <path class="edge-door" d="M780 190 L780 234"></path>
+            <path class="edge-door" d="M780 288 L780 332" marker-end="url(#ar-door)"></path>
+            <text class="t-edge" x="780" y="256" text-anchor="middle">picks the job up</text>
+            <text class="t-edge" x="780" y="272" text-anchor="middle">from team chat</text>
+          </g>
+
+          <!-- destinations -->
+          <g class="dest" id="dest-local">
+            <rect x="24" y="340" width="404" height="118" rx="16" class="box-local"></rect>
+            <text class="t-title" x="226" y="377" text-anchor="middle">Your own computer</text>
+            <text class="t-sub" x="226" y="401" text-anchor="middle">your real files, in your real folders</text>
+            <text class="t-tiny" x="226" y="426" text-anchor="middle">It has to be awake, and Claude has to be running on it.</text>
+            <text class="t-tiny" x="226" y="444" text-anchor="middle">Nothing is copied to the cloud to be worked on.</text>
+          </g>
+
+          <g class="dest" id="dest-cloud">
+            <rect x="452" y="340" width="404" height="118" rx="16" class="box-cloud"></rect>
+            <text class="t-title" x="654" y="377" text-anchor="middle">A computer in the cloud</text>
+            <text class="t-sub" x="654" y="401" text-anchor="middle">an empty machine that fetches a copy of your project</text>
+            <text class="t-tiny" x="654" y="426" text-anchor="middle">Your laptop can be closed and in a bag.</text>
+            <text class="t-tiny" x="654" y="444" text-anchor="middle">It only ever sees what you gave it access to.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>Four doors, two destinations. Remote Control and Dispatch both end up on <em>your</em> machine; Code on the web and Slack both end up on a rented one. That single fork explains most of the difference between them.</figcaption>
+    </figure>
+
+    <p class="hint">Tap a door to trace it on the map</p>
+
+    <div class="doors">
+
+      <button class="door" type="button" aria-pressed="false" aria-controls="map" data-door="rc" data-dest="dest-local">
+        <h3>Remote Control <span class="where">Your computer</span></h3>
+        <p>You already started Claude Code on your own machine. Remote Control opens a window into that exact session from your phone or a browser. You can read along, answer its questions, and send it new instructions — but the work stays on your machine the whole time.</p>
+        <p class="like">Like a baby monitor you can also talk back through.</p>
+      </button>
+
+      <button class="door" type="button" aria-pressed="false" aria-controls="map" data-door="dispatch" data-dest="dest-local">
+        <h3>Dispatch <span class="where">Your computer</span></h3>
+        <p>You just message Claude a task from your phone — nothing has to be running yet. Dispatch lives in the Cowork tab and decides what the job needs. Research and documents it handles itself; if it's really coding work, it opens a Claude Code session on your desktop on its own and pings you when it's done.</p>
+        <p class="like">Like texting someone at home: “hey, can you take care of this?”</p>
+      </button>
+
+      <button class="door" type="button" aria-pressed="false" aria-controls="map" data-door="web" data-dest="dest-cloud">
+        <h3>Code on the web <span class="where">The cloud</span></h3>
+        <p>Claude runs on a machine at Anthropic instead of yours. Nothing needs to be installed or left switched on, and you can start several jobs at once that all run side by side. This page was built in one of these.</p>
+        <p class="like">Like dropping the job off at a workshop across town.</p>
+      </button>
+
+      <button class="door" type="button" aria-pressed="false" aria-controls="map" data-door="slack" data-dest="dest-cloud">
+        <h3>Slack <span class="where">The cloud</span></h3>
+        <p>Someone types <em>@Claude</em> in a team chat channel and Claude picks the job up in the cloud — usually to review a change or open a pull request. It's the same cloud machine as Code on the web; the only new part is where the request came from.</p>
+        <p class="like">Like flagging down a helper who's already in the room.</p>
+      </button>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <p class="eyebrow">Head to head</p>
+      <h2>The three that get mixed up most</h2>
+      <p>If you only remember one thing from this page, make it this table.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Question</th>
+            <th scope="col">Remote Control</th>
+            <th scope="col">Dispatch</th>
+            <th scope="col">Code on the web</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">What you do</th>
+            <td>Start a session at your desk, then pick it up on your phone.</td>
+            <td>Message a task from your phone. Nothing started yet.</td>
+            <td>Open a browser and describe the job.</td>
+          </tr>
+          <tr>
+            <th scope="row">Which computer works</th>
+            <td>Yours.</td>
+            <td>Yours.</td>
+            <td>A rented one in the cloud.</td>
+          </tr>
+          <tr>
+            <th scope="row">Must your computer be on?</th>
+            <td><span class="yes">Yes</span> — and Claude Code already running on it.</td>
+            <td><span class="yes">Yes</span> — the desktop app has to be open.</td>
+            <td><span class="no">No</span> — close the laptop and walk away.</td>
+          </tr>
+          <tr>
+            <th scope="row">Which room does it reach?</th>
+            <td>Claude Code, always.</td>
+            <td>Cowork first — it opens Claude Code only if the job needs it.</td>
+            <td>Claude Code, always.</td>
+          </tr>
+          <tr>
+            <th scope="row">Best when…</th>
+            <td>You're mid-job and want to keep steering it from the couch.</td>
+            <td>You thought of something while out and just want it handled.</td>
+            <td>You want to kick off work with zero setup, or several jobs at once.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <p class="eyebrow">Neither a room nor a door</p>
+      <h2>Things Claude picks up while it works</h2>
+      <p>A few more names you'll run into. These aren't places and they aren't hallways — they're equipment, and they work in every room.</p>
+    </div>
+
+    <div class="shelf">
+      <div>
+        <h3>Skills</h3>
+        <p>A recipe card Claude reads before starting. “Here's how we make slide decks around here.” It picks up the right one on its own.</p>
+      </div>
+      <div>
+        <h3>Connectors</h3>
+        <p>A plug that lets Claude reach something outside itself — Gmail, Notion, GitHub, your calendar — instead of only files.</p>
+      </div>
+      <div>
+        <h3>Artifacts</h3>
+        <p>A finished page Claude builds and gives you a link to. You're reading one right now.</p>
+      </div>
+      <div>
+        <h3>Subagents</h3>
+        <p>Helpers Claude hires for a piece of a big job, so several parts get done at once. They report back and disappear.</p>
+      </div>
+      <div>
+        <h3>Scheduled tasks</h3>
+        <p>An alarm clock. It starts one of the doors on a timer — every morning, every Monday — without you asking again.</p>
+      </div>
+      <div>
+        <h3>The API</h3>
+        <p>The plain wire into Claude, for programmers building their own apps on top of it. No rooms, no doors — just the helper.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <p class="eyebrow">Cheat sheet</p>
+      <h2>If you want to…</h2>
+    </div>
+
+    <ul class="cheat">
+      <li><span class="want">Ask a question or think something through</span><span class="use">Chat</span></li>
+      <li><span class="want">Turn a folder of notes into a deck or a spreadsheet</span><span class="use">Cowork</span></li>
+      <li><span class="want">Fix a bug or build a feature in real code</span><span class="use">Claude Code</span></li>
+      <li><span class="want">Watch and steer a job you already started, from the couch</span><span class="use">Remote Control</span></li>
+      <li><span class="want">Toss a task over from your phone and forget about it</span><span class="use">Dispatch</span></li>
+      <li><span class="want">Start work with nothing installed, laptop closed</span><span class="use">Code on the web</span></li>
+      <li><span class="want">Get a review going without leaving team chat</span><span class="use">Slack</span></li>
+      <li><span class="want">Have the same job run every morning by itself</span><span class="use">Scheduled tasks</span></li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Built from Anthropic's own documentation for <a href="https://code.claude.com/docs/en/remote-control">Remote Control</a>, <a href="https://code.claude.com/docs/en/desktop">Dispatch and the desktop app</a>, and <a href="https://code.claude.com/docs/en/claude-code-on-the-web">Claude Code on the web</a>. Product details change often; the shape of the map — one helper, a few rooms, a few doors — tends not to.</p>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var map = document.getElementById('map');
+    var buttons = Array.prototype.slice.call(document.querySelectorAll('.door'));
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function clear() {
+      map.removeAttribute('data-active');
+      map.querySelectorAll('.on').forEach(function (el) { el.classList.remove('on'); });
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+    }
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var wasOn = btn.getAttribute('aria-pressed') === 'true';
+        clear();
+        if (wasOn) return;
+
+        btn.setAttribute('aria-pressed', 'true');
+        map.setAttribute('data-active', '');
+
+        var lane = document.getElementById('lane-' + btn.dataset.door);
+        var dest = document.getElementById(btn.dataset.dest);
+        if (lane) lane.classList.add('on');
+        if (dest) dest.classList.add('on');
+
+        var box = map.getBoundingClientRect();
+        var offscreen = box.bottom < 80 || box.top > window.innerHeight - 80;
+        if (offscreen) {
+          map.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>
